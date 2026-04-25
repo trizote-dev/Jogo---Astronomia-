@@ -1,7 +1,11 @@
 import pygame
 import sys
-from interface import desenhar_tela, tela_inicial
+from interface import inicializar, desenhar_tela, tela_inicial
 
+
+def main():
+    inicializar() 
+    clock = pygame.time.Clock()
 class Astronauta:
     def __init__(self, nome):
         self.nome = nome
@@ -12,7 +16,7 @@ class Astronauta:
 
     def coletar_agua(self):
         if self.vivo:
-            # limite máximo, por exemplo 5
+       
             self.agua = min(5, self.agua + 1)
 
     def comer(self):
@@ -23,19 +27,18 @@ class Astronauta:
     def passar_dia(self):
         if not self.vivo:
             return
-        # gasta água ou energia
+    
         if self.agua > 0:
             self.agua -= 1
         else:
             self.energia -= 1
 
-        # gasta comida ou energia
+       
         if self.comida > 0:
             self.comida -= 1
         else:
             self.energia -= 1
 
-        # se energia zerar ou for abaixo de 1, morre
         if self.energia <= 0:
             self.vivo = False
 
@@ -106,13 +109,11 @@ def main():
                     game_over = False
                     score_final = None
                     menu = True
-
-            # verificar se todos morreram
+                    
             if not game_over and all(not astro.vivo for astro in astronautas):
                 game_over = True
                 score_final = dia
 
-            # desenhar tudo
             desenhar_tela(dia, astronautas, selecionado, game_over, score_final)
 
         clock.tick(30)
