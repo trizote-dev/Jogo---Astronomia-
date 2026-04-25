@@ -1,6 +1,7 @@
 import pygame
+import os
+import sys
 
-# Cores
 BRANCO = (255, 255, 255)
 AMARELO = (255, 255, 100)
 CINZA = (150, 150, 150)
@@ -11,40 +12,47 @@ VERDE = (80, 200, 120)
 LARGURA = 800
 ALTURA = 600
 
-# Variáveis globais — inicializadas depois
 TELA = None
 fonte = None
 fundo = None
 astronauta_vivo = None
 astronauta_morto = None
 
+
 def inicializar():
-    """Chame isso UMA VEZ no main() antes de qualquer outra coisa."""
     global TELA, fonte, fundo, astronauta_vivo, astronauta_morto
 
     pygame.init()
     TELA = pygame.display.set_mode((LARGURA, ALTURA))
-    pygame.display.set_caption("Sobrevivência em Marte")
-
+    pygame.display.set_caption("Sobrevivencia em Marte")
     fonte = pygame.font.SysFont("consolas", 24, bold=True)
 
-    # Caminho absoluto — resolve o problema de "de onde você roda"
-    import os
     base = os.path.dirname(os.path.abspath(__file__))
 
-    fundo = pygame.image.load(os.path.join(base, "assets", "fundo_marte.png"))
+    caminho_fundo = os.path.join(base, "assets", "fundo_marte.png")
+    caminho_vivo  = os.path.join(base, "assets", "astronauta_vivo.png")
+    caminho_morto = os.path.join(base, "assets", "astronauta_morto.png")
+
+    # Verifica se os arquivos existem antes de tentar carregar
+    for caminho in [caminho_fundo, caminho_vivo, caminho_morto]:
+        if not os.path.exists(caminho):
+            print(f"ERRO: arquivo nao encontrado -> {caminho}")
+            input("Pressione Enter para fechar...")
+            sys.exit()
+
+    fundo = pygame.image.load(caminho_fundo)
     fundo = pygame.transform.scale(fundo, (LARGURA, ALTURA))
 
-    astronauta_vivo = pygame.image.load(os.path.join(base, "assets", "astronauta_vivo.png")).convert_alpha()
+    astronauta_vivo = pygame.image.load(caminho_vivo).convert_alpha()
     astronauta_vivo = pygame.transform.scale(astronauta_vivo, (70, 70))
 
-    astronauta_morto = pygame.image.load(os.path.join(base, "assets", "astronauta_morto.png")).convert_alpha()
+    astronauta_morto = pygame.image.load(caminho_morto).convert_alpha()
     astronauta_morto = pygame.transform.scale(astronauta_morto, (70, 70))
 
 
 def tela_inicial():
     TELA.blit(fundo, (0, 0))
-    titulo = fonte.render("Sobrevivencia em Marte", True, AMARELO)
+    titulo   = fonte.render("Sobrevivencia em Marte", True, AMARELO)
     instrucao = fonte.render("Pressione ENTER para comecar", True, BRANCO)
     TELA.blit(titulo, (200, 200))
     TELA.blit(instrucao, (240, 300))
@@ -80,15 +88,14 @@ def desenhar_tela(dia, astronautas, selecionado, game_over, score_final=None):
         nome_texto = fonte.render(astro.nome, True, cor_nome)
         TELA.blit(nome_texto, (x - 10, y + 80))
 
-        ic_agua = fonte.render("A", True, AZUL)
+        ic_agua   = fonte.render("A", True, AZUL)
         ic_comida = fonte.render("C", True, (255, 165, 0))
         ic_energia = fonte.render("E", True, VERDE)
 
-        desenhar_barra(x, y + 100, astro.agua, AZUL, ic_agua)
-        desenhar_barra(x, y + 120, astro.comida, (255, 165, 0), ic_comida)
-        desenhar_barra(x, y + 140, astro.energia, VERDE, ic_energia)
+        desenhar_barra(x, y + 100, astro.agua,    AZUL,          ic_agua)
+        desenhar_barra(x, y + 120, astro.comida,  (255, 165, 0), ic_comida)
+        desenhar_barra(x, y + 140, astro.energia, VERDE,         ic_energia)
 
-    # HUD inferior — transparência correta
     hud = pygame.Surface((LARGURA, 70))
     hud.set_alpha(180)
     hud.fill((0, 0, 0))
