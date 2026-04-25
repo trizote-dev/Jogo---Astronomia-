@@ -120,9 +120,7 @@ def main():
 
     pygame.quit()
     sys.exit()
-pygame.quit()
-    input("Pressione Enter para fechar...")  # ← adiciona essa linha
-    sys.exit()
+
 
 if __name__ == "__main__":
     main()
